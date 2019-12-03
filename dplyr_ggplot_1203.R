@@ -20,15 +20,15 @@ setwd(wd)
 thanksgiving_raw <- read.csv("thanksgiving_usa.csv", stringsAsFactors = FALSE)
 
 
-#### RCurl ####
+#*** RCurl #***
 # from the website
 # library(RCurl)
 # x <- getURL("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-11-20/thanksgiving_meals.csv")
 # raw <- read.csv(text = x, stringsAsFactors = FALSE)
-###############
+#******************
 
 
-# look at your data -------------------------------------------------------
+# 0. Look at your data -------------------------------------------------------
 # https://github.com/rfordatascience/tidytuesday/tree/master/data/2018/2018-11-20 -- description of variables
 str(thanksgiving_raw)
 summary(thanksgiving_raw)
@@ -101,9 +101,9 @@ unique(df$family_income)
 ## 1. drop NAs (drop_na)
 ## 2. replace Male=1, Female=0
 
-# df_gender <- df %>% 
-#   (___) %>%
-#   mutate(gender_new=___)) 
+ # df_gender <- df %>%
+ #   __()%>%
+ #   (gender_new=__)
 
 #********************************************************
 
@@ -118,9 +118,10 @@ df %>%
 
 # SUMMARISE: reduce multiple values down to a single value
 df_sum <-  df %>%
-  group_by(us_region, main_dish) %>%
+  group_by(us_region, main_dish) %>%  # GROUP BY: group the data by a column
   dplyr::summarise(nr_of_people=n()) %>%
   arrange(-nr_of_people)
+df_sum
   
 # how many people have prepared turkey as a main dish by region ?
 turkey1 <- df_sum %>%
@@ -128,7 +129,7 @@ turkey1 <- df_sum %>%
   filter(main_dish=="Turkey") %>%
   summarise(turkey=sum(nr_of_people))
 
-# percentage?
+# percentage of total?
 turkey2 <- df_sum %>%
   group_by(us_region) %>%
   summarise(total=sum(nr_of_people))
@@ -154,6 +155,9 @@ side_long <- df %>%
   
   arrange(id)    # arrange: arrange (re-order) rows by a column
 
+side_long %>%
+  select(id, side_dish, side_nr) %>%
+  View()
 
 # Spread: from long to wide
 
