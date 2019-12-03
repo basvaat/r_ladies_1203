@@ -7,6 +7,7 @@
 # import libraries
 library(tidyverse)
 library(RColorBrewer)
+library(gridExtra)
 
 # clear the environment
 rm(list=ls())
@@ -100,9 +101,9 @@ unique(df$family_income)
 ## 1. drop NAs (drop_na)
 ## 2. replace Male=1, Female=0
 
-df_gender <- df %>% 
-  (___) %>%
-  mutate(gender_new=___)) 
+# df_gender <- df %>% 
+#   (___) %>%
+#   mutate(gender_new=___)) 
 
 #********************************************************
 
@@ -169,26 +170,40 @@ df_sum_income_gender
 
 
 # II. Data visualization w ggplot2 --------------------------------------------
+# Setup
+options(scipen=999)  # turn off scientific notation like 1e+06
 library(ggplot2)
 library(RColorBrewer)
 
+# Initialize a basic ggplot
+# load a sample dataset
+ggplot(diamonds, aes(x=carat, y=price))  # no plut until you add the geom layers
+
+# point 
+ggplot(diamonds, aes(x=carat, y=price)) +
+  geom_point() +
+  geom_smooth()
+
+
+# simple bar chart: By default, ggplot makes a ‘counts’ barchart
 # people who celebrate vs who do not by age groups:
 # who celebrate
-df %>%
+plot1 <- df %>%
   drop_na(age) %>%
   group_by(age) %>%
-  summarise(people=n()) %>%
-  ggplot(aes(x=age, y=people)) +
-  geom_col()
+  ggplot(aes(x=age)) +
+  geom_bar()
+plot1
 
 # who don't
-thanksgiving_raw %>%
+plot2 <- thanksgiving_raw %>%
   filter(celebrate=="No") %>%
   drop_na(age) %>%
   group_by(age) %>%
   summarise(people=n()) %>%
   ggplot(aes(x=age, y=people)) +
   geom_col(fill="blue") # add color
+plot2
 
 # compare in one graph
 # stacked
@@ -200,6 +215,11 @@ thanksgiving_raw %>%
   geom_col(position= "fill") # equal size columns to compare percentages
   #geom_col(position = "dodge") # to see side by side
 
+# or: library(gridExtra)
+library(gridExtra)
+grid.arrange(plot1,plot2, ncol=2)
+
+
 # Most popular maind dish age-group
 df %>%
   drop_na(age, main_dish) %>% 
@@ -209,7 +229,10 @@ df %>%
   ggplot(aes(main_dish, reorder(nr, main_dish), fill=age)) + # reorder: to show it in a descending order
   geom_col(position = "dodge") +
   coord_flip() +  # flip 
-  theme_classic() +
+  theme_classic() +  # built-in themes  OR "ggthemes" package: additional themes
+  # theme_bw() +
+  # theme_minimal() +
+  # ... 
   scale_fill_brewer(palette = "Accent") +  # add a color palette
   labs(title = "What is the main dish at Thanksgiving dinner (by age groups)?",
        x = "Type of main dish",
